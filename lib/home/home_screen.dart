@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:crud_app/home/dashboard_screen.dart';
 import 'package:crud_app/home/profile_screen.dart';
 import 'package:crud_app/home/settings_screen.dart';
@@ -29,11 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _logout() async {
     try {
-      await FirebaseAuth.instance.signOut(); 
+      await FirebaseAuth.instance.signOut();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal logout: ${e.toString()}')),
+          SnackBar(content: Text('Gagal logout: ${e.toString()}', style: const TextStyle(color: Colors.white)), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }
@@ -41,16 +41,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard Aplikasi'),  
+        title: const Text('Dashboard Aplikasi'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white), // Ikon logout putih
+            icon: Icon(Icons.logout, color: theme.colorScheme.onPrimary),
             onPressed: _logout,
             tooltip: 'Logout',
           ),
         ],
+        backgroundColor: theme.colorScheme.primary,  
+        foregroundColor: theme.colorScheme.onPrimary,  
+        elevation: 4, 
       ),
       body: SafeArea(
         child: LayoutBuilder(
@@ -66,10 +70,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     },
                     labelType: NavigationRailLabelType.all,
-                    selectedIconTheme: const IconThemeData(color: AppColors.primary), 
-                    unselectedIconTheme: const IconThemeData(color: AppColors.textSecondary),  
-                    selectedLabelTextStyle: AppStyles.smallBodyStyle.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.bold),
-                    unselectedLabelTextStyle: AppStyles.smallBodyStyle.copyWith(color: AppColors.textSecondary),
+                    selectedIconTheme: IconThemeData(color: theme.colorScheme.primary),
+                    unselectedIconTheme: IconThemeData(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+                    selectedLabelTextStyle: AppStyles.smallBodyStyle.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                    unselectedLabelTextStyle: AppStyles.smallBodyStyle.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+                    backgroundColor: theme.colorScheme.surface, 
                     destinations: const <NavigationRailDestination>[
                       NavigationRailDestination(
                         icon: Icon(Icons.dashboard_outlined),
@@ -88,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const VerticalDivider(thickness: 1, width: 1, color: Colors.grey),
+                  VerticalDivider(thickness: 1, width: 1, color: theme.dividerColor),
                   Expanded(
                     child: _widgetOptions.elementAt(_selectedIndex),
                   ),
@@ -109,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Icon(Icons.dashboard_outlined),
-                  activeIcon: Icon(Icons.dashboard), // Ikon aktif
+                  activeIcon: Icon(Icons.dashboard),
                   label: 'Dashboard',
                 ),
                 BottomNavigationBarItem(
@@ -124,11 +129,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
               currentIndex: _selectedIndex,
-              selectedItemColor: AppColors.primary,
-              unselectedItemColor: AppColors.textSecondary,
+              selectedItemColor: theme.colorScheme.primary,
+              unselectedItemColor: theme.colorScheme.onSurface.withOpacity(0.6),
               onTap: _onItemTapped,
-              type: BottomNavigationBarType.fixed,  
-              backgroundColor: AppColors.card,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: theme.colorScheme.surface,
               elevation: 8,
               selectedLabelStyle: AppStyles.smallBodyStyle.copyWith(fontWeight: FontWeight.bold),
               unselectedLabelStyle: AppStyles.smallBodyStyle,

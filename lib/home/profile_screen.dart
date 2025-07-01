@@ -38,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await user.updateDisplayName(_nameController.text.trim());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nama berhasil diperbarui!', style: TextStyle(color: Colors.white)), backgroundColor: AppColors.success),
+          SnackBar(content: const Text('Nama berhasil diperbarui!', style: TextStyle(color: Colors.white)), backgroundColor: Theme.of(context).colorScheme.secondary),
         );
       }
       setState(() {
@@ -47,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal memperbarui nama: ${e.toString()}', style: TextStyle(color: Colors.white)), backgroundColor: AppColors.error),
+          SnackBar(content: Text('Gagal memperbarui nama: ${e.toString()}', style: const TextStyle(color: Colors.white)), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
       setState(() {
@@ -62,12 +62,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator(color: theme.colorScheme.primary)),
           );
         }
 
@@ -81,15 +82,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
            _nameController = TextEditingController(text: currentUser.displayName ?? '');
         }
 
-        final String currentDisplayName = currentUser.displayName ?? 'Pengguna Aplikasi';  
+        final String currentDisplayName = currentUser.displayName ?? 'Pengguna Aplikasi';
         final String email = currentUser.email ?? 'email@aplikasi.com';
+        final String uid = currentUser.uid;
 
         return Scaffold(
           appBar: AppBar(
             title: const Text('Profil Saya'),
             centerTitle: true,
-            backgroundColor: AppColors.primary,  
-            foregroundColor: Colors.white,
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
             elevation: 4,
           ),
           body: SingleChildScrollView(
@@ -100,22 +102,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(
                   width: 120,
                   height: 120,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [AppColors.primary, AppColors.primaryDark],
+                      colors: [theme.colorScheme.primary, theme.colorScheme.primaryContainer], 
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primaryDark,
+                        color: theme.colorScheme.primary.withOpacity(0.5),
                         blurRadius: 10,
-                        offset: Offset(0, 5),
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.person, size: 80, color: Colors.white),
+                  child: Icon(Icons.person, size: 80, color: theme.colorScheme.onPrimary),
                 ),
                 const SizedBox(height: 20),
 
@@ -140,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       )
                                     : IconButton(
-                                        icon: const Icon(Icons.check, color: AppColors.success),
+                                        icon: Icon(Icons.check, color: theme.colorScheme.secondary),
                                         onPressed: () => _saveName(currentUser),
                                       ),
                               ),
@@ -156,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     _nameError = null;
                                   });
                                 },
-                                child: Text('Batal', style: AppStyles.smallBodyStyle.copyWith(color: AppColors.textSecondary)),
+                                child: Text('Batal', style: AppStyles.smallBodyStyle.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.7))),
                               ),
                             ),
                           ],
@@ -167,10 +169,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           Text(
                             currentDisplayName,
-                            style: AppStyles.titleStyle.copyWith(color: AppColors.textPrimary),
+                            style: AppStyles.titleStyle.copyWith(color: theme.colorScheme.onBackground),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.edit, size: 20, color: AppColors.primary),
+                            icon: Icon(Icons.edit, size: 20, color: theme.colorScheme.primary),
                             onPressed: () {
                               setState(() {
                                 _isEditingName = true;
@@ -185,9 +187,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 Text(
                   email,
-                  style: AppStyles.bodyStyle.copyWith(color: AppColors.textSecondary),
+                  style: AppStyles.bodyStyle.copyWith(color: theme.colorScheme.onBackground.withOpacity(0.7)),
                 ),
                 const SizedBox(height: 5),
+                Text(
+                  'UID: $uid',
+                  style: AppStyles.smallBodyStyle.copyWith(color: theme.colorScheme.onBackground.withOpacity(0.5)),
+                ),
+                const SizedBox(height: 30),
 
                 Card(
                   elevation: 4,
@@ -196,9 +203,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        _buildProfileInfoRow(Icons.person_outline, 'Nama', currentDisplayName),
-                        const Divider(height: 20, color: Colors.grey),
-                        _buildProfileInfoRow(Icons.email_outlined, 'Email', email),
+                        _buildProfileInfoRow(Icons.person_outline, 'Nama', currentDisplayName, theme),
+                        Divider(height: 20, color: theme.dividerColor),
+                        _buildProfileInfoRow(Icons.email_outlined, 'Email', email, theme),
+                        Divider(height: 20, color: theme.dividerColor),
+                        _buildProfileInfoRow(Icons.vpn_key_outlined, 'User ID', uid, theme),
                       ],
                     ),
                   ),
@@ -208,17 +217,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Card(
                   elevation: 4,
                   child: ListTile(
-                    leading: const Icon(Icons.info_outline, color: AppColors.primary),
+                    leading: Icon(Icons.info_outline, color: theme.colorScheme.primary),
                     title: Text('Tentang Aplikasi', style: AppStyles.bodyStyle),
-                    trailing: const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                    trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurface.withOpacity(0.7)),
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Versi Aplikasi 1.0.0')),
+                        SnackBar(content: const Text('Versi Aplikasi 1.0.0'), backgroundColor: theme.colorScheme.primary),
                       );
                     },
                   ),
                 ),
                 const SizedBox(height: 10),
+                Card(
+                  elevation: 4,
+                  child: ListTile(
+                    leading: Icon(Icons.privacy_tip_outlined, color: theme.colorScheme.primary),
+                    title: Text('Kebijakan Privasi', style: AppStyles.bodyStyle),
+                    trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurface.withOpacity(0.7)),
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: const Text('Membuka Kebijakan Privasi...'), backgroundColor: theme.colorScheme.primary),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),
@@ -227,20 +249,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileInfoRow(IconData icon, String label, String value) {
+  Widget _buildProfileInfoRow(IconData icon, String label, String value, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.primaryDark, size: 24),
+          Icon(icon, color: theme.colorScheme.primary, size: 24),
           const SizedBox(width: 15),
-          Text('$label:', style: AppStyles.bodyStyle.copyWith(fontWeight: FontWeight.bold)),
+          Text('$label:', style: AppStyles.bodyStyle.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               value,
-              style: AppStyles.bodyStyle,
-              overflow: TextOverflow.ellipsis,  
+              style: AppStyles.bodyStyle.copyWith(color: theme.colorScheme.onSurface),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

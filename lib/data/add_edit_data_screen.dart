@@ -52,26 +52,14 @@ class _AddEditDataScreenState extends State<AddEditDataScreen> {
           await _dataService.addItem(itemToSave);
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Data berhasil ditambahkan!',
-                  style: TextStyle(color: Colors.white),
-                ),
-                backgroundColor: AppColors.success,
-              ),
+              SnackBar(content: const Text('Data berhasil ditambahkan!', style: TextStyle(color: Colors.white)), backgroundColor: Theme.of(context).colorScheme.secondary),
             );
           }
         } else {
           await _dataService.updateItem(widget.item!.id!, itemToSave);
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Data berhasil diperbarui!',
-                  style: TextStyle(color: Colors.white),
-                ),
-                backgroundColor: AppColors.success,
-              ),
+              SnackBar(content: const Text('Data berhasil diperbarui!', style: TextStyle(color: Colors.white)), backgroundColor: Theme.of(context).colorScheme.secondary),
             );
           }
         }
@@ -81,13 +69,7 @@ class _AddEditDataScreenState extends State<AddEditDataScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Terjadi kesalahan: ${e.toString()}',
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: AppColors.error,
-            ),
+            SnackBar(content: Text('Terjadi kesalahan: ${e.toString()}', style: const TextStyle(color: Colors.white)), backgroundColor: Theme.of(context).colorScheme.error),
           );
         }
       } finally {
@@ -100,12 +82,13 @@ class _AddEditDataScreenState extends State<AddEditDataScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.item == null ? 'Tambah Item Baru' : 'Edit Item'),
         centerTitle: true,
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
         elevation: 4,
       ),
       body: SingleChildScrollView(
@@ -119,16 +102,16 @@ class _AddEditDataScreenState extends State<AddEditDataScreen> {
                 widget.item == null
                     ? 'Isi detail item baru'
                     : 'Edit detail item',
-                style: AppStyles.subtitleStyle,
+                style: AppStyles.subtitleStyle.copyWith(color: theme.colorScheme.onBackground),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 30),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Nama Item',
                   hintText: 'Misal: Laptop',
-                  prefixIcon: Icon(Icons.label_outline),
+                  prefixIcon: Icon(Icons.label_outline, color: theme.colorScheme.primary),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -140,10 +123,10 @@ class _AddEditDataScreenState extends State<AddEditDataScreen> {
               const SizedBox(height: 20),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Deskripsi Item',
                   hintText: 'Deskripsi lengkap tentang item',
-                  prefixIcon: Icon(Icons.description_outlined),
+                  prefixIcon: Icon(Icons.description_outlined, color: theme.colorScheme.primary),
                   alignLabelWithHint: true,
                 ),
                 maxLines: 3,
@@ -156,7 +139,7 @@ class _AddEditDataScreenState extends State<AddEditDataScreen> {
               ),
               const SizedBox(height: 30),
               _isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Center(child: CircularProgressIndicator(color: theme.colorScheme.primary))
                   : ElevatedButton(
                     onPressed: _saveData,
                     child: Text(

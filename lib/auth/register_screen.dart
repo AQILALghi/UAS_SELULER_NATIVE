@@ -37,9 +37,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registrasi Berhasil!')),
+            SnackBar(content: const Text('Registrasi Berhasil!', style: TextStyle(color: Colors.white)), backgroundColor: Theme.of(context).colorScheme.secondary),
           );
-          Navigator.of(context).pushReplacementNamed(AppRoutes.home); 
+          Navigator.of(context).pushReplacementNamed(AppRoutes.home);
         }
       } on FirebaseAuthException catch (e) {
         String message;
@@ -54,13 +54,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
+            SnackBar(content: Text(message, style: const TextStyle(color: Colors.white)), backgroundColor: Theme.of(context).colorScheme.error),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Terjadi kesalahan tak terduga: ${e.toString()}')),
+            SnackBar(content: Text('Terjadi kesalahan tak terduga: ${e.toString()}', style: const TextStyle(color: Colors.white)), backgroundColor: Theme.of(context).colorScheme.error),
           );
         }
       } finally {
@@ -85,6 +85,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         title: const Text('Buat Akun Baru'),
         centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.background,
+        foregroundColor: Theme.of(context).colorScheme.onBackground,
+        elevation: 0,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -103,16 +106,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 Text(
                   'Silakan isi detail akun Anda.',
-                  style: AppStyles.smallBodyStyle.copyWith(color: AppColors.textSecondary),
+                  style: AppStyles.smallBodyStyle.copyWith(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7)),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Nama Lengkap',
                     hintText: 'Nama Anda',
-                    prefixIcon: Icon(Icons.person_outline),
+                    prefixIcon: Icon(Icons.person_outline, color: Theme.of(context).colorScheme.primary),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -125,10 +128,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Email',
                     hintText: 'alamat@email.com',
-                    prefixIcon: Icon(Icons.email_outlined),
+                    prefixIcon: Icon(Icons.email_outlined, color: Theme.of(context).colorScheme.primary),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -147,10 +150,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: 'Password',
                     hintText: 'Minimal 6 karakter',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    prefixIcon: Icon(Icons.lock_outline, color: Theme.of(context).colorScheme.primary),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       onPressed: () {
                         setState(() {
@@ -171,7 +175,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 30),
                 _isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
                     : ElevatedButton(
                         onPressed: _register,
                         child: const Text('Daftar'),
@@ -181,7 +185,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: () {
                     Navigator.of(context).pushReplacementNamed(AppRoutes.login);
                   },
-                  child: Text('Sudah punya akun? Login di sini.', style: AppStyles.smallBodyStyle.copyWith(color: AppColors.primaryDark)),
+                  child: Text('Sudah punya akun? Login di sini.', style: AppStyles.smallBodyStyle.copyWith(color: Theme.of(context).colorScheme.primary)),
                 ),
               ],
             ),

@@ -16,32 +16,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Item', style: AppStyles.titleStyle.copyWith(color: AppColors.textPrimary)),
+        title: Text('Daftar Item', style: AppStyles.titleStyle.copyWith(color: theme.colorScheme.onBackground)),
         automaticallyImplyLeading: false,
-        backgroundColor: AppColors.background, 
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: theme.colorScheme.background,
+        foregroundColor: theme.colorScheme.onBackground,
         elevation: 0,
       ),
       body: StreamBuilder<List<Item>>(
         stream: _dataService.getItems(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error memuat data: ${snapshot.error}', style: AppStyles.smallBodyStyle.copyWith(color: AppColors.error)));
+            return Center(child: Text('Error memuat data: ${snapshot.error}', style: AppStyles.smallBodyStyle.copyWith(color: theme.colorScheme.error)));
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.inbox, size: 80, color: AppColors.textSecondary.withOpacity(0.5)),
+                  Icon(Icons.inbox, size: 80, color: theme.colorScheme.onBackground.withOpacity(0.5)),
                   const SizedBox(height: 16),
-                  Text('Belum ada data.', style: AppStyles.bodyStyle.copyWith(color: AppColors.textSecondary)),
-                  Text('Klik tombol tambah untuk mulai!', style: AppStyles.smallBodyStyle.copyWith(color: AppColors.textSecondary)),
+                  Text('Belum ada data.', style: AppStyles.bodyStyle.copyWith(color: theme.colorScheme.onBackground)),
+                  Text('Klik tombol tambah untuk mulai!', style: AppStyles.smallBodyStyle.copyWith(color: theme.colorScheme.onBackground.withOpacity(0.7))),
                 ],
               ),
             );
@@ -63,29 +64,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: ListTile(
                   key: ValueKey(item.id),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                  title: Text(item.name, style: AppStyles.subtitleStyle.copyWith(color: AppColors.primaryDark)),
+                  title: Text(item.name, style: AppStyles.subtitleStyle.copyWith(color: theme.colorScheme.onSurface)),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 4.0),
-                    child: Text(item.description, style: AppStyles.smallBodyStyle),
+                    child: Text(item.description, style: AppStyles.smallBodyStyle.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.7))),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit, color: AppColors.primary),
+                        icon: Icon(Icons.edit, color: theme.colorScheme.primary),
                         onPressed: () {
                           Navigator.of(context).pushNamed(AppRoutes.editData, arguments: item);
                         },
                         tooltip: 'Edit Item',
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete, color: AppColors.error),
+                        icon: Icon(Icons.delete, color: theme.colorScheme.error),
                         onPressed: () {
                           if (item.id != null) {
                             _showDeleteConfirmationDialog(item.id!);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('ID item tidak ditemukan.')),
+                              SnackBar(content: const Text('ID item tidak ditemukan.'), backgroundColor: theme.colorScheme.error),
                             );
                           }
                         },
@@ -103,25 +104,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onPressed: () {
           Navigator.of(context).pushNamed(AppRoutes.addData);
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add), 
       ),
     );
   }
 
   void _showDeleteConfirmationDialog(String itemId) {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text('Konfirmasi Hapus', style: AppStyles.subtitleStyle),
-          content: Text('Anda yakin ingin menghapus data ini?', style: AppStyles.bodyStyle),
+          backgroundColor: theme.colorScheme.surface,  
+          title: Text('Konfirmasi Hapus', style: AppStyles.subtitleStyle.copyWith(color: theme.colorScheme.onSurface)),
+          content: Text('Anda yakin ingin menghapus data ini?', style: AppStyles.bodyStyle.copyWith(color: theme.colorScheme.onSurface)),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Batal', style: AppStyles.buttonTextStyle.copyWith(color: AppColors.textSecondary)),
+              child: Text('Batal', style: AppStyles.buttonTextStyle.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.7))),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -129,20 +132,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   await _dataService.deleteItem(itemId);
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Data berhasil dihapus!', style: TextStyle(color: Colors.white)), backgroundColor: AppColors.success),
+                      SnackBar(content: const Text('Data berhasil dihapus!', style: TextStyle(color: Colors.white)), backgroundColor: theme.colorScheme.secondary),
                     );
                     Navigator.of(context).pop();
                   }
                 } catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Gagal menghapus data: ${e.toString()}', style: TextStyle(color: Colors.white)), backgroundColor: AppColors.error),
+                      SnackBar(content: Text('Gagal menghapus data: ${e.toString()}', style: const TextStyle(color: Colors.white)), backgroundColor: theme.colorScheme.error),
                     );
                     Navigator.of(context).pop();
                   }
                 }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error, foregroundColor: Colors.white),
+              style: ElevatedButton.styleFrom(backgroundColor: theme.colorScheme.error, foregroundColor: theme.colorScheme.onError),
               child: const Text('Hapus'),
             ),
           ],
