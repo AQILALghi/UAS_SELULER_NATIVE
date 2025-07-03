@@ -100,7 +100,7 @@ class AppStyles {
       hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.8), fontSize: 16),
       errorStyle: const TextStyle(color: AppColors.error, fontSize: 14, fontWeight: FontWeight.w500),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 6,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
@@ -196,7 +196,7 @@ class AppStyles {
       hintStyle: TextStyle(color: AppColors.darkTextSecondary.withOpacity(0.8), fontSize: 16),
       errorStyle: const TextStyle(color: AppColors.error, fontSize: 14, fontWeight: FontWeight.w500),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 6,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
